@@ -446,7 +446,7 @@ function App({ onNavigate }: LandingPageProps) {
               {
                 icon: Hammer,
                 title: '3. Fabrication',
-                desc: 'Réalisation artisanale en atelier avec un suivi rigoureux'
+                desc: 'Réalisation artisanale avec un suivi rigoureux'
               },
               {
                 icon: Truck,
