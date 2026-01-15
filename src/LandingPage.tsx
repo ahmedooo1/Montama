@@ -624,7 +624,7 @@ function App({ onNavigate }: LandingPageProps) {
               </p>
               <div>
                 <p className="font-bold text-xl text-stone-900">Jean-Pierre L.</p>
-                <p className="text-stone-500">Propriétaire particulier à Lyon</p>
+                <p className="text-stone-500">Propriétaire particulier à Rouen</p>
               </div>
             </div>
           </div>
@@ -665,7 +665,7 @@ function App({ onNavigate }: LandingPageProps) {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-1">Atelier</p>
-                    <p className="text-xl font-bold text-stone-900">12 Rue de l'Artisanat, 69000 Lyon</p>
+                    <p className="text-xl font-bold text-stone-900">12 Rue de l'Artisanat, 76100 Rouen</p>
                   </div>
                 </div>
               </div>
@@ -760,7 +760,7 @@ function App({ onNavigate }: LandingPageProps) {
                 <span className="text-3xl font-bold tracking-tighter">MONTAMA</span>
               </div>
               <p className="text-stone-400 max-w-sm mb-6">
-                Menuiserie d'excellence à Lyon. Nous transformons vos idées en bois véritable pour créer des espaces de
+                Menuiserie d'excellence à Rouen. Nous transformons vos idées en bois véritable pour créer des espaces de
                 vie uniques et fonctionnels.
               </p>
               <div className="flex gap-4">
