@@ -60,10 +60,13 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Tous')
+  const [currentPage, setCurrentPage] = useState(1)
   const [gallery, setGallery] = useState<GalleryItem[]>([])
   const [loadingGallery, setLoadingGallery] = useState(true)
   const [services, setServices] = useState<Service[]>([])
   const [loadingServices, setLoadingServices] = useState(true)
+  
+  const ITEMS_PER_PAGE = 6
   
   // Contact form states
   const [contactForm, setContactForm] = useState({
@@ -351,7 +354,10 @@ function App() {
               {['Tous', 'Cuisines', 'Dressings', 'Meubles'].map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setActiveFilter(cat)}
+                  onClick={() => {
+                    setActiveFilter(cat)
+                    setCurrentPage(1)
+                  }}
                   className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap border ${
                     activeFilter === cat
                       ? 'bg-amber-700 border-amber-700 text-white'
@@ -373,36 +379,79 @@ function App() {
               <div className="col-span-full text-center py-12">
                 <p className="text-stone-400">Aucune réalisation disponible pour le moment.</p>
               </div>
-            ) : (
-              gallery
-                .filter((item) => activeFilter === 'Tous' || item.category === activeFilter)
-                .map((item) => (
-                <div key={item.id} className="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer">
-                  {item.media_type === 'video' ? (
-                    <video
-                      src={item.image_url.startsWith('http') ? item.image_url : `http://localhost:3001${item.image_url}`}
-                      className="w-full h-full object-cover"
-                      controls
-                      loop
-                      playsInline
-                    />
-                  ) : (
-                    <img
-                      src={item.image_url.startsWith('http') ? item.image_url : `http://localhost:3001${item.image_url}`}
-                      alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+            ) : (() => {
+              const filteredGallery = gallery.filter((item) => activeFilter === 'Tous' || item.category === activeFilter)
+              const totalPages = Math.ceil(filteredGallery.length / ITEMS_PER_PAGE)
+              const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+              const paginatedItems = filteredGallery.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+              
+              return (
+                <>
+                  {paginatedItems.map((item) => (
+                    <div key={item.id} className="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer">
+                      {item.media_type === 'video' ? (
+                        <video
+                          src={item.image_url.startsWith('http') ? item.image_url : `http://localhost:3001${item.image_url}`}
+                          className="w-full h-full object-cover"
+                          controls
+                          loop
+                          playsInline
+                        />
+                      ) : (
+                        <img
+                          src={item.image_url.startsWith('http') ? item.image_url : `http://localhost:3001${item.image_url}`}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8 pointer-events-none">
+                        <span className="text-amber-500 text-xs font-bold uppercase tracking-widest mb-2">{item.category}</span>
+                        <h4 className="text-xl font-bold">{item.title}</h4>
+                        {item.media_type === 'video' && (
+                          <span className="text-xs text-gray-300 mt-1">📹 Vidéo</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {totalPages > 1 && (
+                    <div className="col-span-full flex justify-center items-center gap-2 mt-8">
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 rounded-xl border border-stone-700 text-stone-400 hover:text-white hover:border-amber-500 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-stone-400 disabled:hover:border-stone-700 transition-all"
+                      >
+                        <ChevronRight className="w-5 h-5 rotate-180" />
+                      </button>
+                      
+                      <div className="flex gap-2">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`w-10 h-10 rounded-xl font-semibold transition-all ${
+                              currentPage === page
+                                ? 'bg-amber-700 text-white shadow-lg shadow-amber-700/30'
+                                : 'border border-stone-700 text-stone-400 hover:text-white hover:border-amber-500'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 rounded-xl border border-stone-700 text-stone-400 hover:text-white hover:border-amber-500 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-stone-400 disabled:hover:border-stone-700 transition-all"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8 pointer-events-none">
-                    <span className="text-amber-500 text-xs font-bold uppercase tracking-widest mb-2">{item.category}</span>
-                    <h4 className="text-xl font-bold">{item.title}</h4>
-                    {item.media_type === 'video' && (
-                      <span className="text-xs text-gray-300 mt-1">📹 Vidéo</span>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
+                </>
+              )
+            })()}
           </div>
         </div>
       </section>
