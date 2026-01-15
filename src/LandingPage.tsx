@@ -14,9 +14,23 @@ import {
   CheckCircle2,
   Box,
   House,
-  Drill
+  Drill,
+  Users,
+  Award,
+  Target,
+  Lightbulb,
+  ClipboardCheck,
+  Truck,
+  ThumbsUp,
+  HelpCircle,
+  ChevronDown,
+  ZoomIn
 } from 'lucide-react'
 import './App.css'
+
+interface LandingPageProps {
+  onNavigate: (page: string) => void;
+}
 
 // Interface pour les services
 interface Service {
@@ -56,7 +70,7 @@ const navLinks = [
   { name: 'Contact', href: 'contact' },
 ]
 
-function App() {
+function App({ onNavigate }: LandingPageProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Tous')
@@ -65,6 +79,8 @@ function App() {
   const [loadingGallery, setLoadingGallery] = useState(true)
   const [services, setServices] = useState<Service[]>([])
   const [loadingServices, setLoadingServices] = useState(true)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxImage, setLightboxImage] = useState('')
   
   const ITEMS_PER_PAGE = 6
   
@@ -163,6 +179,28 @@ function App() {
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-amber-200">
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-6 right-6 text-white hover:text-amber-500 transition-colors"
+            aria-label="Fermer"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <img
+            src={lightboxImage}
+            alt="Agrandissement"
+            className="max-w-full max-h-full object-contain rounded-xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       <nav
         className={`fixed w-full z-50 transition-all duration-300 ${
           scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'
@@ -301,6 +339,47 @@ function App() {
         </div>
       </section>
 
+      <section id="about" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-sm font-bold text-amber-700 tracking-[0.2em] uppercase mb-3">À Propos</h2>
+              <p className="text-3xl md:text-4xl font-bold text-stone-900 mb-8">L'excellence artisanale depuis 2012</p>
+              <p className="text-lg text-stone-600 leading-relaxed mb-6">
+                Montama est née de la passion de créer des espaces de vie uniques et fonctionnels. 
+                Avec plus de 12 ans d'expérience dans la menuiserie sur-mesure, nous mettons notre 
+                savoir-faire au service de vos projets les plus ambitieux.
+              </p>
+              <p className="text-lg text-stone-600 leading-relaxed mb-8">
+                De la conception à la pose, chaque projet est traité avec le plus grand soin. 
+                Nous travaillons avec des matériaux nobles et utilisons des techniques traditionnelles 
+                alliées aux technologies modernes pour garantir une qualité irréprochable.
+              </p>
+              <div className="flex items-start gap-4 bg-amber-50 p-6 rounded-2xl border border-amber-200">
+                <div className="bg-amber-700 p-3 rounded-xl">
+                  <Award className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-stone-900 mb-1 text-lg">Garantie décennale</p>
+                  <p className="text-stone-600">Tous nos travaux sont couverts par une assurance complète pour votre tranquillité d'esprit</p>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <img
+                src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=800"
+                alt="Artisan menuisier au travail"
+                className="rounded-3xl shadow-2xl"
+              />
+              <div className="absolute -bottom-6 -left-6 bg-amber-700 text-white p-8 rounded-2xl shadow-xl max-w-xs">
+                <p className="text-4xl font-bold mb-2">450+</p>
+                <p className="text-amber-100">Projets réalisés avec succès</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="services" className="py-24 bg-stone-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -340,6 +419,63 @@ function App() {
               })}
             </div>
           )}
+        </div>
+      </section>
+
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-sm font-bold text-amber-700 tracking-[0.2em] uppercase mb-3">Notre Processus</h2>
+            <p className="text-3xl md:text-4xl font-bold text-stone-900">Comment nous travaillons</p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-8 relative">
+            <div className="hidden md:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
+            
+            {[
+              {
+                icon: Target,
+                title: '1. Consultation',
+                desc: 'Échange sur vos besoins, prise de mesures et conseils personnalisés'
+              },
+              {
+                icon: Lightbulb,
+                title: '2. Conception',
+                desc: 'Création de plans et choix des matériaux adaptés à votre projet'
+              },
+              {
+                icon: Hammer,
+                title: '3. Fabrication',
+                desc: 'Réalisation artisanale en atelier avec un suivi rigoureux'
+              },
+              {
+                icon: Truck,
+                title: '4. Installation',
+                desc: 'Pose professionnelle et finitions impeccables chez vous'
+              }
+            ].map((step, index) => {
+              const IconComponent = step.icon
+              return (
+                <div key={index} className="relative text-center">
+                  <div className="mx-auto w-20 h-20 bg-amber-700 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-amber-700/30 relative z-10">
+                    <IconComponent className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-stone-900 mb-3">{step.title}</h3>
+                  <p className="text-stone-600 leading-relaxed">{step.desc}</p>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="mt-16 text-center">
+            <button
+              onClick={() => scrollToSection('contact')}
+              className="inline-flex items-center gap-2 bg-amber-700 text-white px-8 py-4 rounded-xl font-bold hover:bg-amber-800 transition-all shadow-lg shadow-amber-900/10"
+            >
+              Démarrer mon projet
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </section>
 
@@ -388,7 +524,16 @@ function App() {
               return (
                 <>
                   {paginatedItems.map((item) => (
-                    <div key={item.id} className="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer">
+                    <div 
+                      key={item.id} 
+                      className="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer"
+                      onClick={() => {
+                        if (item.media_type !== 'video') {
+                          setLightboxImage(item.image_url.startsWith('http') ? item.image_url : `http://localhost:3001${item.image_url}`)
+                          setLightboxOpen(true)
+                        }
+                      }}
+                    >
                       {item.media_type === 'video' ? (
                         <video
                           src={item.image_url.startsWith('http') ? item.image_url : `http://localhost:3001${item.image_url}`}
@@ -407,8 +552,12 @@ function App() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8 pointer-events-none">
                         <span className="text-amber-500 text-xs font-bold uppercase tracking-widest mb-2">{item.category}</span>
                         <h4 className="text-xl font-bold">{item.title}</h4>
-                        {item.media_type === 'video' && (
+                        {item.media_type === 'video' ? (
                           <span className="text-xs text-gray-300 mt-1">📹 Vidéo</span>
+                        ) : (
+                          <span className="text-xs text-gray-300 mt-1 flex items-center gap-1">
+                            <ZoomIn className="w-3 h-3" /> Cliquer pour agrandir
+                          </span>
                         )}
                       </div>
                     </div>
@@ -482,7 +631,7 @@ function App() {
         </div>
       </section>
 
-      <section id="contact" className="py-24 bg-stone-50">
+      <section id="contact" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
@@ -639,9 +788,9 @@ function App() {
             <div>
               <h4 className="font-bold text-lg mb-6">Informations</h4>
               <ul className="space-y-4 text-stone-400">
-                <li onClick={() => scrollToSection('')} className="hover:text-amber-500 cursor-pointer transition-colors">À propos</li>
+                <li onClick={() => scrollToSection('about')} className="hover:text-amber-500 cursor-pointer transition-colors">À propos</li>
+                <li onClick={() => onNavigate('faq')} className="hover:text-amber-500 cursor-pointer transition-colors">FAQ</li>
                 <li onClick={() => scrollToSection('realisations')} className="hover:text-amber-500 cursor-pointer transition-colors">Réalisations</li>
-                <li onClick={() => scrollToSection('')} className="hover:text-amber-500 cursor-pointer transition-colors">Mentions légales</li>
                 <li onClick={() => scrollToSection('contact')} className="hover:text-amber-500 cursor-pointer transition-colors">Contact</li>
               </ul>
             </div>

@@ -8,14 +8,43 @@ import ServicesManagement from './pages/ServicesManagement';
 import GalleryManagement from './pages/GalleryManagement';
 import ContactsManagement from './pages/ContactsManagement';
 import LandingPage from './LandingPage';
+import FAQPage from './pages/FAQPage';
+import { useState } from 'react';
 
 function App() {
+  const [currentPage, setCurrentPage] = useState('home');
+
+  const handleNavigate = (page: string) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    if (!sectionId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <BrowserRouter>
       <AdminProvider>
         <Routes>
           {/* Public Route - Landing Page */}
-          <Route path="/" element={<LandingPage />} />
+          <Route 
+            path="/" 
+            element={
+              currentPage === 'home' ? (
+                <LandingPage onNavigate={handleNavigate} />
+              ) : (
+                <FAQPage onNavigate={handleNavigate} scrollToSection={scrollToSection} />
+              )
+            } 
+          />
 
           {/* Admin Login */}
           <Route path="/admin/login" element={<AdminLogin />} />
